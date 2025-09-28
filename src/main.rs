@@ -1,0 +1,93 @@
+/*
+ * Copyright (C) 2025 Nicolás Ortega Froysa <nicolas@ortegas.org> All rights reserved.
+ * Author: Nicolás Ortega Froysa <nicolas@ortegas.org>
+ *
+ * This software is provided 'as-is', without any express or implied
+ * warranty. In no event will the authors be held liable for any damages
+ * arising from the use of this software.
+ *
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+ *
+ * 1. The origin of this software must not be misrepresented; you must not
+ *    claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
+ *
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ *
+ * 3. This notice may not be removed or altered from any source
+ *    distribution.
+ */
+
+use std::env;
+use std::fs;
+use std::io;
+use std::io::Read;
+use std::io::Write;
+use std::process;
+
+// Read 1KiB of the file at a time.
+static BLOCK_SIZE:usize = 1024;
+
+fn main() -> io::Result<()> {
+	let args:Vec<String> = env::args().collect();
+
+	if args.len() != 3 {
+		eprintln!("Usage: {} <in-file> <out-file>", args[0]);
+		process::exit(1);
+	}
+
+	let in_file = fs::File::open(&args[1])?;
+	let mut in_reader = io::BufReader::new(in_file);
+
+	let out_file = fs::File::create(&args[2])?;
+	let mut out_writer = io::BufWriter::new(out_file);
+
+	let mut read_buf:[u8; BLOCK_SIZE] = [0; BLOCK_SIZE];
+	let mut last_ch:char = '\0';
+	let mut tab_num = 0;
+
+	while in_reader.read(&mut read_buf)? > 0 {
+		for i in read_buf {
+			let ch = i as char;
+			match ch {
+				'[' | '{' => {
+					tab_num += 1;
+					out_writer.write(format!("{}\n", ch).as_bytes())?;
+					for _ in 0..tab_num {
+						out_writer.write(b"  ")?;
+					}
+					last_ch = ' ';
+				},
+				']' | '}' => {
+					tab_num -= 1;
+					out_writer.write(b"\n")?;
+					for _ in 0..tab_num {
+						out_writer.write(b"  ")?;
+					}
+					out_writer.write(format!("{}", ch).as_bytes())?;
+					last_ch = ch;
+				},
+				',' => {
+					out_writer.write(format!("{}\n", ch).as_bytes())?;
+					for _ in 0..tab_num {
+						out_writer.write(b"  ")?;
+					}
+					last_ch = ' ';
+				},
+				_ => {
+					let ch = ch;
+					if ch != ' ' || last_ch != ' ' {
+						out_writer.write(format!("{}", ch).as_bytes())?;
+						last_ch = ch;
+					}
+				},
+			}
+		}
+	}
+
+	Ok(())
+}
