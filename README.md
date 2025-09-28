@@ -9,29 +9,19 @@ file with the output so that it is much  more readable.
 To run the program, simply run it as follows:
 
 ```console
-$ qdbus-prettifier <in-file> <out-file>
+qdbus-prettifier <in-file> <out-file>
 ```
 
 ## Building
 
-Requirements:
+To compile the program, install the Rust suite, namely the compiler and Cargo.
+Once installed you can run `cargo build --release` to generate a release build
+of the project which will be found at `target/release/dbus-prettifier`.
 
-- C compiler that supports GNU99 (GCC recommended).
-- (GNU) Make
-
-Build with `make`:
-
-```console
-$ make
-cc  -std=gnu99 -Wall -Wextra -Wfatal-errors -Werror -O2 -DNDEBUG   -c -o src/main.o src/main.c
-cc -o dbus-prettifier src/main.o
-```
-
-Install with `make install`:
+To install you can use the `install` command as follows:
 
 ```console
-$ sudo make install
-install -Dm755 dbus-prettifier /usr/local/bin/
+install -Dm755 target/release/dbus-prettifier /usr/local/bin
 ```
 
 ## License
