@@ -40,8 +40,13 @@ fn main() -> io::Result<()> {
 		process::exit(1);
 	}
 
-	let in_file = fs::File::open(&args[1])?;
-	let mut in_reader = io::BufReader::new(in_file);
+	let mut in_reader:Box<dyn io::Read>;
+	if args[1] == "-" {
+		in_reader = Box::new(io::stdin());
+	} else {
+		let in_file = fs::File::open(&args[1])?;
+		in_reader = Box::new(io::BufReader::new(in_file));
+	}
 
 	let mut out_writer:Box<dyn io::Write>;
 	if args.len() == 3 {
