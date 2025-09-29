@@ -23,83 +23,65 @@
  */
 
 use std::env;
-use std::fs;
 use std::io;
-use std::io::Read;
-use std::boxed::Box;
 use std::process;
 
-// Read 1KiB of the file at a time.
-static BLOCK_SIZE:usize = 1024;
+use crate::worker::work;
+
+mod worker;
+
+fn print_version() {
+	println!("{} v{}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
+}
+
+fn print_usage() {
+	println!("Usage: {} <in-file> [out-file]", env!("CARGO_PKG_NAME"));
+}
+
+fn print_help() {
+	print_version();
+	println!("Usage: \n\
+		\t{} <in-file> [out-file]\n\
+		\t{} -h | -v\n\
+		\n\
+		OPTIONS:\n\
+		\tin-file   Input file ('-' for stdin)\n\
+		\tout-file  Output file\n\
+		\t-h        Show this help information\n\
+		\t-v        Show version information",
+		env!("CARGO_PKG_NAME"), env!("CARGO_PKG_NAME"));
+}
 
 fn main() -> io::Result<()> {
 	let args:Vec<String> = env::args().collect();
+	let mut in_path:Option<&str> = None;
+	let mut out_path:Option<&str> = None;
 
 	if args.len() < 2 || args.len() > 3 {
-		eprintln!("Usage: {} <in-file> [out-file]", args[0]);
+		eprintln!("Invalid number of arguments. Use -h for more information.");
+		print_usage();
 		process::exit(1);
 	}
 
-	let mut in_reader:Box<dyn io::Read>;
-	if args[1] == "-" {
-		in_reader = Box::new(io::stdin());
-	} else {
-		let in_file = fs::File::open(&args[1])?;
-		in_reader = Box::new(io::BufReader::new(in_file));
-	}
-
-	let mut out_writer:Box<dyn io::Write>;
-	if args.len() == 3 {
-		let out_file = fs::File::create(&args[2])?;
-		out_writer = Box::new(io::BufWriter::new(out_file));
-	} else {
-		out_writer = Box::new(io::stdout());
-	}
-
-	let mut read_buf:[u8; BLOCK_SIZE] = [0; BLOCK_SIZE];
-	let mut last_ch:char = '\0';
-	let mut tab_num = 0;
-
-	while in_reader.read(&mut read_buf)? > 0 {
-		for i in read_buf {
-			let ch = i as char;
-			match ch {
-				'[' | '{' => {
-					tab_num += 1;
-					out_writer.write(format!("{}\n", ch).as_bytes())?;
-					for _ in 0..tab_num {
-						out_writer.write(b"  ")?;
-					}
-					last_ch = ' ';
-				},
-				']' | '}' => {
-					tab_num -= 1;
-					out_writer.write(b"\n")?;
-					for _ in 0..tab_num {
-						out_writer.write(b"  ")?;
-					}
-					out_writer.write(format!("{}", ch).as_bytes())?;
-					last_ch = ch;
-				},
-				',' => {
-					out_writer.write(format!("{}\n", ch).as_bytes())?;
-					for _ in 0..tab_num {
-						out_writer.write(b"  ")?;
-					}
-					last_ch = ' ';
-				},
-				_ => {
-					let ch = ch;
-					if ch != ' ' || last_ch != ' ' {
-						out_writer.write(format!("{}", ch).as_bytes())?;
-						last_ch = ch;
-					}
-				},
-			}
+	for i in &args {
+		if i == "-h" {
+			print_help();
+			return Ok(());
+		} else if i == "-v" {
+			print_version();
+			return Ok(());
+		} else if i.starts_with("-") && i != "-" {
+			eprintln!("Invalid argument '{}'. Use -h for help information.", i);
+			process::exit(1);
 		}
 	}
 
-	out_writer.flush()?;
+	if args[1] != "-" {
+		in_path = Some(args[1].as_str());
+	}
+	if args.len() == 3 {
+		out_path = Some(args[2].as_str());
+	}
 
-	Ok(())
+	work(in_path, out_path)
 }
