@@ -23,7 +23,6 @@
  */
 
 use std::env;
-use std::io;
 use std::process;
 
 use crate::worker::work;
@@ -52,7 +51,7 @@ fn print_help() {
 		env!("CARGO_PKG_NAME"), env!("CARGO_PKG_NAME"));
 }
 
-fn main() -> io::Result<()> {
+fn main() {
 	let args:Vec<String> = env::args().collect();
 	let mut in_path:Option<&str> = None;
 	let mut out_path:Option<&str> = None;
@@ -66,10 +65,10 @@ fn main() -> io::Result<()> {
 	for i in &args[1..args.len()] {
 		if i == "-h" {
 			print_help();
-			return Ok(());
+			return;
 		} else if i == "-v" {
 			print_version();
-			return Ok(());
+			return;
 		} else if i.starts_with("-") && i != "-" {
 			eprintln!("Invalid argument '{}'. Use -h for help information.", i);
 			process::exit(1);
@@ -83,5 +82,9 @@ fn main() -> io::Result<()> {
 		out_path = Some(args[2].as_str());
 	}
 
-	work(in_path, out_path)
+	let res = work(in_path, out_path);
+	if let Err(err) = res {
+		eprintln!("{}", err);
+		process::exit(1);
+	}
 }
