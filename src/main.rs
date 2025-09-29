@@ -63,7 +63,7 @@ fn main() -> io::Result<()> {
 		process::exit(1);
 	}
 
-	for i in &args {
+	for i in &args[1..args.len()] {
 		if i == "-h" {
 			print_help();
 			return Ok(());
