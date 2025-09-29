@@ -1,6 +1,6 @@
 [package]
 name = "dbus-prettifier"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2024"
 authors = [ "Nicolás A. Ortega Froysa <nicolas@ortegas.org>" ]
 description = "A tool to prettify the output of qdbus."
