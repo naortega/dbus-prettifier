@@ -60,7 +60,6 @@ pub fn work(in_path:Option<&str>, out_path:Option<&str>) -> io::Result<()>  {
 					last_ch = ' ';
 				},
 				_ => {
-					let ch = ch;
 					if ch != ' ' || last_ch != ' ' {
 						out_writer.write(format!("{}", ch).as_bytes())?;
 						last_ch = ch;
