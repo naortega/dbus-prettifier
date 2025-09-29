@@ -26,7 +26,7 @@ use std::env;
 use std::fs;
 use std::io;
 use std::io::Read;
-use std::io::Write;
+use std::boxed::Box;
 use std::process;
 
 // Read 1KiB of the file at a time.
@@ -35,16 +35,21 @@ static BLOCK_SIZE:usize = 1024;
 fn main() -> io::Result<()> {
 	let args:Vec<String> = env::args().collect();
 
-	if args.len() != 3 {
-		eprintln!("Usage: {} <in-file> <out-file>", args[0]);
+	if args.len() < 2 || args.len() > 3 {
+		eprintln!("Usage: {} <in-file> [out-file]", args[0]);
 		process::exit(1);
 	}
 
 	let in_file = fs::File::open(&args[1])?;
 	let mut in_reader = io::BufReader::new(in_file);
 
-	let out_file = fs::File::create(&args[2])?;
-	let mut out_writer = io::BufWriter::new(out_file);
+	let mut out_writer:Box<dyn io::Write>;
+	if args.len() == 3 {
+		let out_file = fs::File::create(&args[2])?;
+		out_writer = Box::new(io::BufWriter::new(out_file));
+	} else {
+		out_writer = Box::new(io::stdout());
+	}
 
 	let mut read_buf:[u8; BLOCK_SIZE] = [0; BLOCK_SIZE];
 	let mut last_ch:char = '\0';
@@ -88,6 +93,8 @@ fn main() -> io::Result<()> {
 			}
 		}
 	}
+
+	out_writer.flush()?;
 
 	Ok(())
 }
