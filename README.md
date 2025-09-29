@@ -9,7 +9,7 @@ file with the output so that it is much  more readable.
 To run the program, simply run it as follows:
 
 ```console
-qdbus-prettifier <in-file> <out-file>
+qdbus-prettifier <in-file> [out-file]
 ```
 
 ## Building
