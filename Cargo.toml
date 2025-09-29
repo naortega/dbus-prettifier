@@ -2,5 +2,13 @@
 name = "dbus-prettifier"
 version = "0.1.0"
 edition = "2024"
+authors = [ "Nicolás A. Ortega Froysa <nicolas@ortegas.org>" ]
+description = "A tool to prettify the output of qdbus."
+readme = "./README.md"
+homepage = "https://code.ortegas.org/nortega/dbus-prettifier"
+repository = "https://code.ortegas.org/nortega/dbus-prettifier"
+license = "Zlib"
+keywords = [ "dbus", "qdbus", "prettifier" ]
+categories = [ "command-line-utilities" ]
 
 [dependencies]
