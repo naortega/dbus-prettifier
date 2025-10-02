@@ -67,7 +67,7 @@ pub fn work(in_path:Option<&str>, out_path:Option<&str>) -> Result<(), String>  
 			match ch {
 				'[' | '{' => {
 					tab_num += 1;
-					out_writer.write(format!("{}\n", ch).as_bytes()).unwrap();
+					out_writer.write(format!("{ch}\n").as_bytes()).unwrap();
 					for _ in 0..tab_num {
 						out_writer.write(b"  ").unwrap();
 					}
@@ -79,11 +79,11 @@ pub fn work(in_path:Option<&str>, out_path:Option<&str>) -> Result<(), String>  
 					for _ in 0..tab_num {
 						out_writer.write(b"  ").unwrap();
 					}
-					out_writer.write(format!("{}", ch).as_bytes()).unwrap();
+					out_writer.write(format!("{ch}").as_bytes()).unwrap();
 					last_ch = ch;
 				},
 				',' => {
-					out_writer.write(format!("{}", ch).as_bytes()).unwrap();
+					out_writer.write(format!("{ch}").as_bytes()).unwrap();
 					if last_ch == '}' || last_ch == ']' {
 						out_writer.write(b"\n").unwrap();
 						for _ in 0..tab_num {
@@ -96,7 +96,7 @@ pub fn work(in_path:Option<&str>, out_path:Option<&str>) -> Result<(), String>  
 				},
 				_ => {
 					if ch != ' ' || last_ch != ' ' {
-						out_writer.write(format!("{}", ch).as_bytes()).unwrap();
+						out_writer.write(format!("{ch}").as_bytes()).unwrap();
 						last_ch = ch;
 					}
 				},
