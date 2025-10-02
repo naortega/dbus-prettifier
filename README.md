@@ -12,6 +12,12 @@ To run the program, simply run it as follows:
 qdbus-prettifier <in-file> [out-file]
 ```
 
+If `<in-file>` is defined as `-` this tells the program to read from `stdin`
+allowing input to be piped. If the `[out-file]` option is omitted then output is
+sent to `stdout`.
+
+For more information, check out the `-h` option.
+
 ## Building
 
 To compile the program, install the Rust suite, namely the compiler and Cargo.
