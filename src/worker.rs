@@ -83,11 +83,16 @@ pub fn work(in_path:Option<&str>, out_path:Option<&str>) -> Result<(), String>  
 					last_ch = ch;
 				},
 				',' => {
-					out_writer.write(format!("{}\n", ch).as_bytes()).unwrap();
-					for _ in 0..tab_num {
-						out_writer.write(b"  ").unwrap();
+					out_writer.write(format!("{}", ch).as_bytes()).unwrap();
+					if last_ch == '}' || last_ch == ']' {
+						out_writer.write(b"\n").unwrap();
+						for _ in 0..tab_num {
+							out_writer.write(b"  ").unwrap();
+						}
+						last_ch = ' ';
+					} else {
+						last_ch = ch;
 					}
-					last_ch = ' ';
 				},
 				_ => {
 					if ch != ' ' || last_ch != ' ' {
