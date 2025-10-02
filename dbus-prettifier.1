@@ -1,0 +1,37 @@
+.TH dbus-prettifier "1" "October 2025" "dbus-prettifier 1.2.0" "User Commands"
+.SH "NAME"
+dbus-prettifier - A tool to prettify the output of qdbus.
+.SH "SYNOPSIS"
+.B dbus-prettifier
+<\fIin-file\fR> [\fIout-file\fR]
+
+.B dbus-prettifier
+\fI-h\fR | \fI-v\fR
+
+.SH "DESCRIPTION"
+Takes input from qdbus (either stored in a file or from \fIstdin\fR) and stores
+it in the provided \fIout-file\fR.
+
+.SH "ARGUMENTS"
+.TP
+\fBin-file\fR
+File containing qdbus output (if \fI-\fR then input is from \fIstdin\fR)
+.TP
+\fBout-file\fR
+File to write formatted output to (if omitted then \fIstdout\fR is used)
+.TP
+\fB\-h\fR
+Show help information
+.TP
+\fB\-v\fR
+Show version information
+
+.SH "AUTHOR"
+Written by Nicolás A. Ortega Froysa.
+
+.SH "COPYRIGHT"
+Copyright \(co 2024 Ortega Froysa, Nicolás A. <nicolas@ortegas.org>.
+License: ZLib License.
+
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
