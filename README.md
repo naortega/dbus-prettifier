@@ -1,8 +1,8 @@
 # DBus Prettifier
 
-I noticed that when working with `qdbus` that I would get long and unformatted
-outputs that are extremely difficult to read. This small program will prettify a
-file with the output so that it is much  more readable.
+I noticed when working with `qdbus` that I would get long and unformatted
+outputs that are extremely difficult to read. This small program will prettify
+a file with the output so that it is much more readable.
 
 ## Usage
 
