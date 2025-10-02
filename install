@@ -1,0 +1,17 @@
+#!/bin/bash
+set -euo pipefail
+
+PREFIX=${PREFIX:="/usr/local"}
+
+if ! [ -f "./target/release/dbus-prettifier" ]
+then
+	>&2 echo "Failed to find release target. Please compile the project with 'cargo build --release'."
+	exit 1
+fi
+
+gzip -k ./dbus-prettifier.1
+
+install -Dm644 ./dbus-prettifier.1.gz "$PREFIX/share/man/man1/"
+install -Dm755 ./target/release/dbus-prettifier "$PREFIX/bin/"
+
+rm -f ./dbus-prettifier.1.gz

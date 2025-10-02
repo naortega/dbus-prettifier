@@ -1,0 +1,13 @@
+#!/bin/bash
+set -euo pipefail
+
+PREFIX=${PREFIX:="/usr/local"}
+
+if ! [ -f "$PREFIX/bin/dbus-prettifier" ]
+then
+	>&2 echo "Installation not found in prefix '$PREFIX'."
+	exit 1
+fi
+
+rm -f "$PREFIX/bin/dbus-prettifier"
+rm -f "$PREFIX/share/man/man1/dbus-prettifier.1.gz"

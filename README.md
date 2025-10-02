@@ -18,17 +18,22 @@ sent to `stdout`.
 
 For more information, check out the `-h` option.
 
-## Building
+## Building & Installation
 
 To compile the program, install the Rust suite, namely the compiler and Cargo.
 Once installed you can run `cargo build --release` to generate a release build
 of the project which will be found at `target/release/dbus-prettifier`.
 
-To install you can use the `install` command as follows:
+To install the program you can use the `install` script. By default this will
+install to `/usr/local`, but this can be changed by setting the `PREFIX`
+variable prior to the command. For example:
 
 ```console
-install -Dm755 target/release/dbus-prettifier /usr/local/bin
+PREFIX=/usr ./install
 ```
+
+Similarly, to uninstall simply run the `uninstall` script. It uses the same
+`PREFIX` variable.
 
 ## License
 
