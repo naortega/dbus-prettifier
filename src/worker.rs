@@ -58,6 +58,7 @@ pub fn work(in_path:Option<&str>, out_path:Option<&str>) -> Result<(), String>  
 
 	let mut last_ch = '\0';
 	let mut tab_num = 0;
+	let mut in_paren = false;
 	let mut write_buf = String::new();
 
 	for i in in_reader.bytes() {
@@ -65,17 +66,25 @@ pub fn work(in_path:Option<&str>, out_path:Option<&str>) -> Result<(), String>  
 		match ch {
 			'[' | '{' => {
 				tab_num += 1;
-				write_buf += format!("{ch}\n").as_str();
-				for _ in 0..tab_num {
-					write_buf += "  ";
+				//write_buf += format!("{ch}\n").as_str();
+				write_buf.push(ch);
+				if !in_paren {
+					write_buf.push('\n');
+					for _ in 0..tab_num {
+						write_buf += "  ";
+					}
+					last_ch = ' ';
+				} else {
+					last_ch = ch;
 				}
-				last_ch = ' ';
 			},
 			']' | '}' => {
 				tab_num -= 1;
-				write_buf += "\n";
-				for _ in 0..tab_num {
-					write_buf += "  ";
+				if !in_paren {
+					write_buf += "\n";
+					for _ in 0..tab_num {
+						write_buf += "  ";
+					}
 				}
 				write_buf.push(ch);
 				last_ch = ch;
@@ -94,6 +103,11 @@ pub fn work(in_path:Option<&str>, out_path:Option<&str>) -> Result<(), String>  
 			},
 			_ => {
 				if ch != ' ' || last_ch != ' ' {
+					if ch == '(' {
+						in_paren = true;
+					} else if ch == ')' {
+						in_paren = false;
+					}
 					write_buf.push(ch);
 					last_ch = ch;
 				}
