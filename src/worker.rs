@@ -27,6 +27,8 @@ use std::fs;
 use std::io::Read;
 use std::boxed::Box;
 
+static MAX_WRITE_BUF_SIZE:usize = 1024;
+
 pub fn work(in_path:Option<&str>, out_path:Option<&str>) -> Result<(), String>  {
 	let in_reader:Box<dyn io::Read> = match in_path {
 		Some(path) => {
@@ -56,33 +58,34 @@ pub fn work(in_path:Option<&str>, out_path:Option<&str>) -> Result<(), String>  
 
 	let mut last_ch = '\0';
 	let mut tab_num = 0;
+	let mut write_buf = String::new();
 
 	for i in in_reader.bytes() {
 		let ch = i.unwrap() as char;
 		match ch {
 			'[' | '{' => {
 				tab_num += 1;
-				out_writer.write(format!("{ch}\n").as_bytes()).unwrap();
+				write_buf += format!("{ch}\n").as_str();
 				for _ in 0..tab_num {
-					out_writer.write(b"  ").unwrap();
+					write_buf += "  ";
 				}
 				last_ch = ' ';
 			},
 			']' | '}' => {
 				tab_num -= 1;
-				out_writer.write(b"\n").unwrap();
+				write_buf += "\n";
 				for _ in 0..tab_num {
-					out_writer.write(b"  ").unwrap();
+					write_buf += "  ";
 				}
-				out_writer.write(format!("{ch}").as_bytes()).unwrap();
+				write_buf.push(ch);
 				last_ch = ch;
 			},
 			',' => {
-				out_writer.write(format!("{ch}").as_bytes()).unwrap();
+				write_buf.push(ch);
 				if last_ch == '}' || last_ch == ']' {
-					out_writer.write(b"\n").unwrap();
+					write_buf.push('\n');
 					for _ in 0..tab_num {
-						out_writer.write(b"  ").unwrap();
+						write_buf += "  ";
 					}
 					last_ch = ' ';
 				} else {
@@ -91,11 +94,20 @@ pub fn work(in_path:Option<&str>, out_path:Option<&str>) -> Result<(), String>  
 			},
 			_ => {
 				if ch != ' ' || last_ch != ' ' {
-					out_writer.write(format!("{ch}").as_bytes()).unwrap();
+					write_buf.push(ch);
 					last_ch = ch;
 				}
 			},
 		}
+
+		if write_buf.len() >= MAX_WRITE_BUF_SIZE {
+			out_writer.write_all(write_buf.as_bytes()).unwrap();
+			write_buf.clear();
+		}
+	}
+
+	if write_buf.len() > 0 {
+		out_writer.write_all(write_buf.as_bytes()).unwrap();
 	}
 
 	Ok(())
